@@ -1,4 +1,4 @@
-const movieRouter = require('express').Router();
+const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { linkRegExp } = require('../utils/constants');
 
@@ -8,15 +8,15 @@ const {
   deleteMovie,
 } = require('../controllers/movies');
 
-movieRouter.get('/', getSavedMovies);
+router.get('/movies', getSavedMovies);
 
-movieRouter.delete('/:_id', celebrate({
+router.delete('/movies/:_id', celebrate({
   params: Joi.object().keys({
     _id: Joi.string().hex().length(24).required(),
   }),
 }), deleteMovie);
 
-movieRouter.post('/', celebrate({
+router.post('/movies', celebrate({
   body: Joi.object().keys({
     nameEN: Joi.string().required(),
     nameRU: Joi.string().required(),
@@ -32,4 +32,4 @@ movieRouter.post('/', celebrate({
   }),
 }), createMovie);
 
-module.exports = movieRouter;
+module.exports = router;
