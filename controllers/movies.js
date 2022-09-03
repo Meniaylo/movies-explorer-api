@@ -60,7 +60,7 @@ const createMovie = (req, res, next) => {
     movieId,
     owner: req.user._id,
   })
-    .then((user) => res.send(user))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataError('Введите корректные данные'));

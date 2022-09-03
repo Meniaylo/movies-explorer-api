@@ -1,32 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 
-const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const userRouter = require('./routes/users');
-const movieRouter = require('./routes/movies');
-const auth = require('./middlewares/auth');
+const { router } = require('./routes');
+const { MongoLink, PORT } = require('./utils/constants');
+const limiterConfig = require('./utils/limiterConfig');
+// const userRouter = require('./routes/users');
+// const movieRouter = require('./routes/movies');
+// const auth = require('./middlewares/auth');
 const errorsHandler = require('./modules/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { login, createUser } = require('./controllers/users');
+// const { login, createUser } = require('./controllers/users');
 
-const NotFoundError = require('./errors/not-found-err');
+// const NotFoundError = require('./errors/not-found-err');
 
 const app = express();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
+const limiter = rateLimit(limiterConfig);
 
 app.use(requestLogger);
 app.use(limiter);
@@ -51,36 +48,8 @@ app.use(
 
 app.use(cookieParser());
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
-app.get('/signout', (_req, res) => {
-  res.clearCookie('jwt').send({ message: 'Вы вышли из приложения, и мы уже скучаем!' });
-});
-
-app.use(auth);
-
-app.use('/users', userRouter);
-app.use('/movies', movieRouter);
-
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
-
-app.use('*', (_req, _res, next) => {
-  next(new NotFoundError('Not Found'));
-});
-
+mongoose.connect(MongoLink);
+app.use(router);
 app.use(errorLogger);
 app.use(errors());
 app.use(errorsHandler);

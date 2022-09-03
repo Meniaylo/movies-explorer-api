@@ -20,13 +20,10 @@ const login = (req, res, next) => {
       }
 
       return bcrypt.compare(password, user.password)
-        // eslint-disable-next-line consistent-return
         .then((isValid) => {
           if (!isValid) {
             throw new UnauthorizedError('Неверный email или пароль');
-          }
-
-          if (isValid) {
+          } else {
             const token = jwt.sign(
               { _id: user._id },
               NODE_ENV === 'production' ? JWT_SECRET : 'SECRET_KEY',
@@ -72,12 +69,14 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-    }))
+    .then((user) => res
+      .status(201)
+      .send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataError('Введите корректные данные'));
