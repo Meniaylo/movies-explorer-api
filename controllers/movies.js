@@ -3,6 +3,7 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/not-found-err');
 const DataError = require('../errors/data-err');
 const ForbiddenError = require('../errors/forbidden-err');
+const ConflictError = require('../errors/conflict-err');
 
 const getSavedMovies = (_req, res, next) => {
   Movie.find().sort({ _id: -1 })
@@ -12,7 +13,7 @@ const getSavedMovies = (_req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  Movie.findOne({ _id: req.params.movieId })
+  Movie.findOne({ _id: req.params._id })
     .orFail(() => new NotFoundError('Фильм c указанным _id не найден'))
     .then((movie) => {
       if (String(movie.owner) === req.user._id) {
@@ -32,7 +33,6 @@ const deleteMovie = (req, res, next) => {
 };
 
 const createMovie = (req, res, next) => {
-  console.log(req.user._id);
   const {
     nameEN,
     nameRU,
@@ -65,6 +65,8 @@ const createMovie = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataError('Введите корректные данные'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Такой фильм уже есть в базе'));
       } else {
         next(err);
       }

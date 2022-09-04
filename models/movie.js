@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const movieSchema = new mongoose.Schema({
   nameEN: {
     type: String,
+    unique: true,
     required: [true, "Поле 'nameRU' должно быть заполнено"],
   },
 
   nameRU: {
     type: String,
+    unique: true,
     required: [true, "Поле 'nameEN' должно быть заполнено"],
   },
 
