@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const userRouter = require('./users');
+const movieRouter = require('./movies');
 const { login, createUser } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const NotFoundError = require('../errors/not-found-err');
@@ -25,11 +27,11 @@ router.get('/signout', (_req, res) => {
 
 router.use(auth);
 
-router.use(require('./users'));
-router.use(require('./movies'));
+router.use('/users', userRouter);
+router.use('/movies', movieRouter);
 
 router.use('*', (_req, _res, next) => {
   next(new NotFoundError('Not Found'));
 });
 
-module.exports = { router };
+module.exports = router;
