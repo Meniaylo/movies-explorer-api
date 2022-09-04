@@ -32,6 +32,7 @@ const deleteMovie = (req, res, next) => {
 };
 
 const createMovie = (req, res, next) => {
+  console.log(req.user._id);
   const {
     nameEN,
     nameRU,
