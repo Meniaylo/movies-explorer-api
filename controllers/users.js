@@ -33,7 +33,7 @@ const login = (req, res, next) => {
             return res
               .cookie('jwt', token, {
                 httpOnly: true,
-                secure: true,
+                // secure: true,
                 sameSite: 'none',
                 path: '/',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -95,7 +95,6 @@ const getUserInfo = (req, res, next) => {
     .then((data) => {
       res.send(data);
     })
-    .catch((err) => next(err))
     .catch(next);
 };
 
@@ -114,6 +113,8 @@ const updateUserProfile = (req, res, next) => {
         next(new DataError('Переданы некорректные данные при обновлении профиля'));
       } else if (err.statusCode === 404) {
         next(new NotFoundError('Пользователь с указанным _id не найден'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже существует'));
       } else {
         next(err);
       }
