@@ -11,15 +11,8 @@ const cors = require('cors');
 const router = require('./routes');
 const { MongoLink, PORT } = require('./utils/constants');
 const limiterConfig = require('./utils/limiterConfig');
-// const userRouter = require('./routes/users');
-// const movieRouter = require('./routes/movies');
-// const auth = require('./middlewares/auth');
 const errorsHandler = require('./modules/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-
-// const { login, createUser } = require('./controllers/users');
-
-// const NotFoundError = require('./errors/not-found-err');
 
 const app = express();
 
