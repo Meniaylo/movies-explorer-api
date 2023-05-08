@@ -78,7 +78,7 @@ DELETE /movies/:_id
 
 ### Установка:
 **npm install** – установить зависимости проекта.  
-**npm run start** – запуск сервера.  
+**npm run start** – запуск сервера на локальном порту 3000.  
 **npm run dev** – запуск сервера с hot reload.  
 <br/>
 
