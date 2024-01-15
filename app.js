@@ -41,6 +41,8 @@ app.use(
 
 app.use(cookieParser());
 
+mongoose.set('strictQuery', false);
+
 mongoose.connect(MongoLink);
 app.use(router);
 app.use(errorLogger);
